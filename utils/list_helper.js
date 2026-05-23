@@ -1,19 +1,12 @@
-const dummy = (blogs) => {
-  return 1
-}
+const dummy = (blogs) => 1
 
 const totalLikes = (blogs) => {
-  const reducer = (sum, blog) => {
-    return sum + blog.likes
-  }
-
+  const reducer = (sum, blog) => sum + blog.likes
   return blogs.reduce(reducer, 0)
 }
 
 const favoriteBlog = (blogs) => {
-  if (blogs.length === 0) {
-    return null
-  }
+  if (blogs.length === 0) return null
 
   let favorite = blogs[0]
 
@@ -27,41 +20,53 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-  if (blogs.length === 0) {
-    return null
-  }
+  if (blogs.length === 0) return null
 
-  const authorCounts = {}
+  const counts = {}
 
   blogs.forEach(blog => {
-    const author = blog.author
-
-    if (authorCounts[author]) {
-      authorCounts[author] += 1
-    } else {
-      authorCounts[author] = 1
-    }
+    counts[blog.author] = (counts[blog.author] || 0) + 1
   })
 
   let topAuthor = ''
-  let maxBlogs = 0
+  let max = 0
 
-  for (const author in authorCounts) {
-    if (authorCounts[author] > maxBlogs) {
-      maxBlogs = authorCounts[author]
+  for (const author in counts) {
+    if (counts[author] > max) {
+      max = counts[author]
       topAuthor = author
     }
   }
 
-  return {
-    author: topAuthor,
-    blogs: maxBlogs
+  return { author: topAuthor, blogs: max }
+}
+
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return null
+
+  const likes = {}
+
+  blogs.forEach(blog => {
+    likes[blog.author] = (likes[blog.author] || 0) + blog.likes
+  })
+
+  let topAuthor = ''
+  let max = 0
+
+  for (const author in likes) {
+    if (likes[author] > max) {
+      max = likes[author]
+      topAuthor = author
+    }
   }
+
+  return { author: topAuthor, likes: max }
 }
 
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
