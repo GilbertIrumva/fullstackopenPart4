@@ -58,3 +58,38 @@ describe('favorite blog', () => {
     })
   })
 })
+
+describe('most blogs', () => {
+
+  const blogs = [
+    {
+      title: 'First',
+      author: 'Robert C. Martin',
+      likes: 5
+    },
+    {
+      title: 'Second',
+      author: 'Robert C. Martin',
+      likes: 7
+    },
+    {
+      title: 'Third',
+      author: 'Edsger Dijkstra',
+      likes: 10
+    },
+    {
+      title: 'Fourth',
+      author: 'Robert C. Martin',
+      likes: 3
+    }
+  ]
+
+  test('author with most blogs is returned', () => {
+    const result = listHelper.mostBlogs(blogs)
+
+    assert.deepStrictEqual(result, {
+      author: 'Robert C. Martin',
+      blogs: 3
+    })
+  })
+})
