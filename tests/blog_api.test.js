@@ -48,6 +48,29 @@ test('blogs have id field (not _id)', async () => {
   }
 })
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'New blog',
+    author: 'Tester',
+    url: 'https://example.com/new',
+    likes: 7
+  };
+
+  const blogsAtStart = await api.get('/api/blogs');
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await api.get('/api/blogs');
+  assert.strictEqual(blogsAtEnd.body.length, blogsAtStart.body.length + 1);
+
+  const titles = blogsAtEnd.body.map(b => b.title);
+  assert.ok(titles.includes(newBlog.title));
+});
+
 after(async () => {
   await mongoose.connection.close()
 })
