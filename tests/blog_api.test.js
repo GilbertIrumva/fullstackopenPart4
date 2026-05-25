@@ -40,6 +40,14 @@ test('all blogs are returned', async () => {
   assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
+test('blogs have id field (not _id)', async () => {
+  const response = await api.get('/api/blogs')
+  for (const blog of response.body) {
+    assert.ok(blog.id, 'Blog is missing id field')
+    assert.strictEqual(blog._id, undefined, 'Blog should not have _id field')
+  }
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
