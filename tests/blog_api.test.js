@@ -1,3 +1,4 @@
+
 const { test, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
@@ -22,6 +23,30 @@ const initialBlogs = [
     likes: 10
   }
 ]
+
+test('blog without title is not added (400)', async () => {
+  const newBlog = {
+    author: 'No Title',
+    url: 'https://example.com/notitle',
+    likes: 1
+  };
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
+});
+
+test('blog without url is not added (400)', async () => {
+  const newBlog = {
+    title: 'No URL',
+    author: 'No Url',
+    likes: 1
+  };
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
+});
 
 beforeEach(async () => {
   await Blog.deleteMany({})
