@@ -130,6 +130,45 @@ describe('nwhen there is iitially some blogs saved', () => {
         .expect(400)
     })
   })
+
+  describe('updating a blog', () => {
+    test('succeeds with status 200 and updates likes', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToUpdate = blogsAtStart[0]
+
+      const updatedData = { ...blogToUpdate, likes: blogToUpdate.likes + 100 }
+
+      const response = await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(updatedData)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      assert.strictEqual(response.body.likes, blogToUpdate.likes + 100)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      const updated = blogsAtEnd.find(b => b.id === blogToUpdate.id)
+      assert.strictEqual(updated.likes, blogToUpdate.likes + 100)
+    })
+
+    test('fails with status code 404 if blog does not exist', async () => {
+      const validNonexistingId = await helper.nonExistingId()
+
+      await api
+        .put(`/api/blogs/${validNonexistingId}`)
+        .send({ likes: 5 })
+        .expect(404)
+    })
+
+    test('fails with status code 400 if id is invalid', async () => {
+      const invalidId = '5a3d5da59070081a82a3445'
+
+      await api
+        .put(`/api/blogs/${invalidId}`)
+        .send({ likes: 5 })
+        .expect(400)
+    })
+  })
 })
 
 after(async () => {
