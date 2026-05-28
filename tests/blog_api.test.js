@@ -113,6 +113,7 @@ describe('nwhen there is iitially some blogs saved', () => {
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
     })
 
+
     test('fails with status code 400 if url is missing', async () => {
       const newBlog = {
         title: 'No URL',
@@ -129,6 +130,24 @@ describe('nwhen there is iitially some blogs saved', () => {
       const blogsAtEnd = await helper.blogsInDb()
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
     })
+
+    test('fails with status code 401 if token is missing', async () => {
+      const newBlog = {
+        title: 'No token blog',
+        author: 'Unauthorized User',
+        url: 'https://example.com/notoken',
+        likes: 3
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
   })
 
   describe('deletion of a blog', () => {
