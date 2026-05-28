@@ -7,15 +7,34 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+const jwt = require('jsonwebtoken');
+// Middleware to extract token from Authorization header
+const getTokenFrom = request => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7);
+  }
+  return null;
+};
+
 blogsRouter.post('/', async (request, response) => {
   const { title, url, author, likes } = request.body;
   if (!title || !url) {
     return response.status(400).json({ error: 'title and url are required' });
   }
-  // Find any user (first one)
-  const user = await User.findOne({});
+  const token = getTokenFrom(request);
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, process.env.SECRET || 'dev_secret');
+  } catch (err) {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
+  if (!token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
+  const user = await User.findById(decodedToken.id);
   if (!user) {
-    return response.status(400).json({ error: 'No users in database' });
+    return response.status(401).json({ error: 'user not found' });
   }
   const blog = new Blog({
     title,
