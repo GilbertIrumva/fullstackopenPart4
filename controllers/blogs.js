@@ -8,21 +8,13 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 const jwt = require('jsonwebtoken');
-// Middleware to extract token from Authorization header
-const getTokenFrom = request => {
-  const authorization = request.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-};
 
 blogsRouter.post('/', async (request, response) => {
   const { title, url, author, likes } = request.body;
   if (!title || !url) {
     return response.status(400).json({ error: 'title and url are required' });
   }
-  const token = getTokenFrom(request);
+  const token = request.token;
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, process.env.SECRET || 'dev_secret');
